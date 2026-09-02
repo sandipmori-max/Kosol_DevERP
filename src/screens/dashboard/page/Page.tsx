@@ -72,7 +72,6 @@ import TranslatedText from "../tabs/home/TranslatedText";
 import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
 import { updateAppMenuList } from "../../../store/slices/auth/authSlice";
 import DocScan from "./components/DocScan";
-import DisabledDateTime from "./components/DisabledDateTime";
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -801,15 +800,11 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
               rule.formulaType === "componentHideVisible"
           );
 
-          console.log("isComponentHideVisibleisComponentHideVisibleisComponentHideVisible", isComponentHideVisible)
-
           if (isComponentHideVisible) {
             const updatedValues = {
               ...formValues,
               [item.field]: val,
             };
-
-            console.log("updatedValuesupdatedValuesupdatedValues", updatedValues)
 
             setFormValues(updatedValues);
 
@@ -818,8 +813,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
               updatedValues,
               item.field
             );
-
-            console.log("resultresultresult", result)
 
             if (result.actions?.length) {
               const updatedControls = applyActionsToControls(
@@ -963,6 +956,8 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
 
       let content = null;
 
+      // 
+     
       //BoolInput
       if (item?.ctltype === "BOOL") {
         const rawVal = formValues[item?.field] ?? item?.text;
@@ -1174,6 +1169,8 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
           />
         );
       }
+
+
       //Input
       else {
         content = (
@@ -1194,6 +1191,16 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
             isFromNew={isFromNew}
           />
         );
+      }
+
+       if(true){
+        content = <BusinessCardView
+                baseLink={baseLink}
+                infoData={infoData}
+                setValue={setValue}
+                controls={controls}
+                item={item}
+              />
       }
       //content
       return (
