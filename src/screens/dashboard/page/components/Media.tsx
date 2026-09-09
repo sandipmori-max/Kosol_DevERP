@@ -63,7 +63,7 @@ const Media = ({
   });
  const isIpad =
    ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
-   
+ 
   console.log("Media Rendered with imageUri:", imageUri, "and errors:", errors);
   const scale = useRef(new Animated.Value(1)).current;
   const translateX = useRef(new Animated.Value(0)).current;
@@ -458,7 +458,8 @@ const Media = ({
           },
         },
       ];
-    } else if (item?.ctltype === "IMAGE" && !item?.field?.startsWith("gallary_camera_")) {
+    } 
+    else if (item?.ctltype === "IMAGE" && !item?.field?.startsWith("gallary_camera_")) {
       return [
         {
           text: "Camera",
