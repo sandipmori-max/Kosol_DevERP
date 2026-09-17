@@ -58,10 +58,11 @@ const BusinessCardView = ({
   item,
   baseLink,
   infoData,
-  isFromInvoiceReader
+  isFromInvoiceReader = false
 }: any) => {
 
-  const navigation = useNavigation();
+  console.log("isFromInvoiceReaderisFromInvoiceReaderisFromInvoiceReaderisFromInvoiceReader", isFromInvoiceReader)
+    const navigation = useNavigation();
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [base64, setBase64] = useState(false);
@@ -753,34 +754,8 @@ const BusinessCardView = ({
         setCacheBuster(Date.now());
 
         if(isFromInvoiceReader){
-          if (Platform.OS === 'android') {
-            const base64Data = await RNFS.readFile(
-              processed[0].uri,
-              "base64",
-            );
-            setCacheBuster(Date.now());
-            setBase64(
-              `${item?.field}.jpeg; data:image/jpeg;base64,${base64Data}`
-            );
-          } else {
-            setCacheBuster(Date.now());
-            setBase64(
-              `${item?.field}.jpeg; data:image/jpeg;base64,${processed[0]?.base64}`,
-            );
-          }
-
-          setImageUri(processed[0]?.uri);
-          return;
-        }
-        
-
-        // --------------------------------
-        // SEND FILE TO MINDEE
-        // -
-        // -------------------------------
-
-
-        const enqueueResponse =
+          console.log("isFromInvoiceReader00000000000")
+          const enqueueResponse =
           await enqueueMindeeInvoice(processed[0].uri);
 
         const jobId =
@@ -808,16 +783,51 @@ const BusinessCardView = ({
             2,
           ),
         );
-        setScanLoader(false)
+       
         setInvoiceData(invoiceData);
+        }else {
 
-        ////
+          if (result?.images?.length > 0) {
+        const processed = result.images.map((img: any) => ({
+          ...img,
+          base64: img.base64 || null,
+        }));
+
+
+        setCacheBuster(Date.now());
+        if (Platform.OS === 'android') {
+          const base64Data = await RNFS.readFile(
+            processed[0].uri,
+            "base64",
+          );
+          setCacheBuster(Date.now());
+          setBase64(
+            `${item?.field}.jpeg; data:image/jpeg;base64,${base64Data}`
+          );
+        } else {
+          setCacheBuster(Date.now());
+          setBase64(
+            `${item?.field}.jpeg; data:image/jpeg;base64,${processed[0]?.base64}`,
+          );
+        }
+
+        setImageUri(processed[0]?.uri);
+      } else {
+      }
+
+
+       
+        }
+        
+
+     
 
 
       }
     } catch (error: any) {
       Alert.alert("Error", error.message || "Something went wrong");
     } finally {
+       setScanLoader(false)
       setShowPicker(false);
     }
   };

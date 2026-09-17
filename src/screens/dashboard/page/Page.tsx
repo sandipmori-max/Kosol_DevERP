@@ -1073,6 +1073,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
                 setValue={setValue}
                 controls={controls}
                 item={item}
+                isFromInvoiceReader={false}
               />
             ) : (
               <Media
@@ -1083,6 +1084,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
                 isFromNew={isFromNew}
                 handleAttachment={handleAttachment}
                 errors={errors}
+                isTextScan={true}
               />
             )}
           </>

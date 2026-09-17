@@ -9,12 +9,13 @@
     "start": "react-native start",
     "test": "jest",
     "bundle-android": "cd android && ./gradlew --stop && ./gradlew clean && ./gradlew generateCodegenArtifactsFromSchema && ./gradlew app:bundleRelease",
-    "build-android": "cd android && ./gradlew --stop && ./gradlew clean && ./gradlew generateCodegenArtifactsFromSchema && ./gradlew app:assembleRelease && ./gradlew app:bundleRelease"
+    "build-android": "cd android && ./gradlew --stop && ./gradlew clean && ./gradlew generateCodegenArtifactsFromSchema && ./gradlew app:assembleRelease"
   },
   "dependencies": {
     "@bam.tech/react-native-image-resizer": "^3.0.11",
     "@notifee/react-native": "^9.1.8",
     "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-clipboard/clipboard": "^1.16.3",
     "@react-native-community/datetimepicker": "^8.6.0",
     "@react-native-community/geolocation": "^3.4.0",
     "@react-native-community/netinfo": "^11.4.1",
@@ -65,7 +66,7 @@
     "react-native-reanimated": "^3.19.5",
     "react-native-render-html": "^6.3.4",
     "react-native-safe-area-context": "^5.5.2",
-     "react-native-screens": "4.11.1",
+    "react-native-screens": "4.11.1",
     "react-native-share": "^12.3.1",
     "react-native-signature-canvas": "^5.1.1",
     "react-native-sqlite-storage": "^6.0.1",

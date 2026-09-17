@@ -4255,3 +4255,8 @@ savePage / pageDelete / pageAuth / pageDeAuth / pageCancel → CRUD & workflow
 
 --- WORKING ON DARK THEME 
 --- Manully ajax - input wala 
+
+
+{\"seq\":\"7\",\"name\":\"Business Card\",\"code\":\"BC\",\"link\":\"BusinessCardMst\",\"iconname\":\"add-card\"}
+
+{\"seq\":\"7\",\"name\":\"Business Card\",\"code\":\"BC\",\"link\":\"BusinessCardMst\",\"iconname\":\"add-card\",\"isapplink\":\"True\",\"title\":\"\",\"url\":\"BusinessCardMst\",\"isfrombusinesscard\":\"True\"}

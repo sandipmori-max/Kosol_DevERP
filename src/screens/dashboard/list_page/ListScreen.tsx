@@ -857,9 +857,8 @@ const ListScreen = () => {
     setSortingKey("")
     setSortConfig(null)
     // setIsFilterVisible(false);
-    setSearchQuery("");
-
-    if (parsedConfig?.editentry === 1 || parsedConfig?.editentry === "1") {
+    setSearchQuery(""); 
+    if (parsedConfig?.newentry === 1 || parsedConfig?.newentry === "1") {
       navigation.navigate("Page", {
         item,
         title: page,
@@ -1659,7 +1658,7 @@ const ListScreen = () => {
                     totalQty={totalQty}
                     isFromBusinessCard={isFromBusinessCard}
                     pageParamsName={pageParamsName}
-                    handleItemPressed={handleItemPressed}
+                    // handleItemPressed={handleItemPressed}
                     parsedConfig={parsedConfig}
                     pageName={pageName}
                     setIsFilterVisible={setIsFilterVisible}
@@ -1682,7 +1681,7 @@ const ListScreen = () => {
                     totalQty={totalQty}
                     isFromBusinessCard={isFromBusinessCard}
                     pageParamsName={pageParamsName}
-                    handleItemPressed={handleItemPressed}
+                    // handleItemPressed={handleItemPressed}
                     parsedConfig={parsedConfig}
                     pageName={pageName}
                     setIsFilterVisible={setIsFilterVisible}

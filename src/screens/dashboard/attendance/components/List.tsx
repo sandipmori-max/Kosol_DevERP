@@ -616,7 +616,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                             alignItems: "center",
                                           }}
                                         >
-                                          {rec?.image && rec?.image != "" && (
+                                          {/* {rec?.image && rec?.image != "" && (
                                             <TouchableOpacity
                                               onPress={() => {
                                                 setImg(
@@ -637,8 +637,8 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                                 style={styles.recordAvatar}
                                               />
                                             </TouchableOpacity>
-                                          )}
-                                          {rec?.image2 && rec?.image2 != "" && (
+                                          )} */}
+                                          {/* {rec?.image2 && rec?.image2 != "" && (
                                             <TouchableOpacity
                                               onPress={() => {
                                                 setImg(
@@ -669,7 +669,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                                 ]}
                                               />
                                             </TouchableOpacity>
-                                          )}
+                                          )} */}
                                         </View>
 
                                         {/* Details */}
@@ -1245,7 +1245,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                               alignItems: "center",
                                             }}
                                           >
-                                            {rec?.image &&
+                                            {/* {rec?.image &&
                                               rec?.image !== "" && (
                                                 <TouchableOpacity
                                                   onPress={() => {
@@ -1271,9 +1271,9 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                                     style={styles.recordAvatar}
                                                   />
                                                 </TouchableOpacity>
-                                              )}
+                                              )} */}
 
-                                            {rec?.image2 &&
+                                            {/* {rec?.image2 &&
                                               rec?.image2 !== "" && (
                                                 <TouchableOpacity
                                                   onPress={() => {
@@ -1307,7 +1307,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                                     ]}
                                                   />
                                                 </TouchableOpacity>
-                                              )}
+                                              )} */}
                                           </View>
 
                                           {/* Details */}
