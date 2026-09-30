@@ -280,7 +280,7 @@ export default {
   test22: "Set location access to Always Allow in settings for continuous tracking.",
   test23: "Open Settings",
   test24: "Developed by",
-  test25: "My attendance",
+  test25: "My Attendance",
   test26: "Attendance",
   text27: 'Select date',
   text28: "Permission Required",

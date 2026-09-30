@@ -3639,7 +3639,10 @@ curl --location 'https://payroll.deverp.net/devws/msp_api.aspx/pageDelete' \
      "page": "EmployeeMaster"
 }'
 
+(CUID in ($UID,0) or $UID IN (1,13,37,3,31))
 [ Auth ]
+
+VALA DRASHTI  BAKULBHAI
 
 curl --location 'https://payroll.deverp.net/devws/msp_api.aspx/pageAuth' \
 --header 'Content-Type: application/json' \
@@ -4127,7 +4130,8 @@ POST https://payroll.deverp.net/devws/msp_api.aspx/punhout
 
 
 Request Body:
-
+https://github.com/ashiqee/carwash-fontend.git
+https://github.com/dancarlton/rinse.git
 {
   "token": "your_token",
   "page": "punhout",
@@ -4260,3 +4264,802 @@ savePage / pageDelete / pageAuth / pageDeAuth / pageCancel → CRUD & workflow
 {\"seq\":\"7\",\"name\":\"Business Card\",\"code\":\"BC\",\"link\":\"BusinessCardMst\",\"iconname\":\"add-card\"}
 
 {\"seq\":\"7\",\"name\":\"Business Card\",\"code\":\"BC\",\"link\":\"BusinessCardMst\",\"iconname\":\"add-card\",\"isapplink\":\"True\",\"title\":\"\",\"url\":\"BusinessCardMst\",\"isfrombusinesscard\":\"True\"}
+
+
+
+
+
+/////
+
+CREATE View [dbo].[ViewPunchIn] as   
+SELECT a.ID, b.UserName  Employee, Convert(varchar(11),a.InDate,113) Date, 
+Convert(varchar(7),a.InDate,111) Month,Convert(varchar(5),a.InDate,108) InTime, Convert(varchar(5),a.OutDate,108) OutTime, a.InRemarks,
+'fileupload/1/Attendance/' + Convert(varchar(20),ID) +'/'+ Convert(Varchar(20),a.InImage) Image,'fileupload/1/Attendance/' + Convert(varchar(20),ID) +'/'+  Convert(Varchar(20),a.OutImage) Image2,
+a.OutRemarks, isnull(a.CUID,a.EmployeeID) CUID, c.UserName EntryBy, a.CDT, 
+ x.Att, --case when a.OutDate is null then 1 When datediff(Hour,InDate,OutDate) >7 then 1 When datediff(Hour,InDate,OutDate) >4 then 0.5 else 0 end Att , 
+case when a.OutDate is null and Convert(date,InDate)=Convert(date,getdate()) then 'Working' when a.OutDate is null then 'Punch Missing' When datediff(Hour,InDate,OutDate) >7 then 'FullDay' When datediff(Hour,InDate,OutDate) >4 then 'Half' else 'Leave' end Status,
+InLocation, a.WorkingHours, a.BreakHours, a.OverTime, a.LateIn, a.EarlyOut,
+CASE  
+	-- Today: InDate exists + OutDate is NULL
+	WHEN a.InDate IS NOT NULL AND a.OutDate IS NULL AND CONVERT(DATE, a.InDate) = CONVERT(DATE, GETDATE())
+	THEN CASE WHEN CAST(a.InDate AS TIME) > CAST(d.LateMarkAfter AS TIME) THEN 'Late In' ELSE 'Checked In' END
+	-- Previous date: InDate exists + OutDate is NULL
+	WHEN a.InDate IS NOT NULL AND a.OutDate IS NULL THEN 'Missing Checkout'
+	-- Leave
+	WHEN x.Att = 0 THEN 'Leave'
+	-- Half Day
+	WHEN x.Att = 0.5 THEN 'Half Day'
+	WHEN a.InDate IS NOT NULL AND a.OutDate IS NOT NULL THEN 
+		CASE 
+            WHEN CAST(a.InDate AS TIME) < CAST(d.HalfDayAfter AS TIME) 
+                 AND CAST(a.OutDate AS TIME) >= CAST(d.HalfDayAfter AS TIME)
+                THEN 'First half'
+            WHEN CAST(a.InDate AS TIME) >= CAST(d.HalfDayAfter AS TIME) 
+                 AND CAST(a.OutDate AS TIME) > CAST(d.EndTime AS TIME)
+                THEN 'Second half'
+            ELSE ''
+       END
+	-- Late In + Early Out
+	WHEN a.InDate IS NOT NULL AND a.OutDate IS NOT NULL AND CAST(a.InDate AS TIME) > CAST(d.LateMarkAfter AS TIME) AND CAST(a.OutDate AS TIME) < CAST(d.EndTime AS TIME) THEN 'Late In + Early Out'
+	-- Late In + Overtime
+	WHEN a.InDate IS NOT NULL AND a.OutDate IS NOT NULL AND CAST(a.InDate AS TIME) > CAST(d.LateMarkAfter AS TIME) AND d.OverTimeApplicable = 'Y' AND CAST(a.OutDate AS TIME) > CAST(d.OverTimeAfter AS TIME) THEN 'Late In + Overtime'
+	-- Overtime
+	WHEN a.OutDate IS NOT NULL AND d.OverTimeApplicable = 'Y' AND CAST(a.OutDate AS TIME) > CAST(d.OverTimeAfter AS TIME) THEN 'Overtime'
+	-- Late In
+	WHEN a.InDate IS NOT NULL AND CAST(a.InDate AS TIME) > CAST(d.LateMarkAfter AS TIME) THEN 'Late In'
+	-- Early Out
+	WHEN a.OutDate IS NOT NULL AND CAST(a.OutDate AS TIME) < CAST(d.EndTime AS TIME) THEN 'Early Out'
+	-- Normal Present
+	WHEN a.InDate IS NOT NULL AND a.OutDate IS NOT NULL THEN 'Present'
+ELSE '' END AS PunchStatus
+FROM Attendance(NOLOCK) a 
+-- LEFT OUTER JOIN EmployeeMaster(NOLOCK) b on a.EmployeeID = b.EmpID 
+LEFT OUTER JOIN UserMaster(NOLOCK) b on a.EmployeeID = b.UserID 
+LEFT OUTER JOIN UserMaster(NOLOCK) c on a.CUID = c.UserID   
+LEFT JOIN ShiftMaster(NOLOCK) d ON d.SID = b.ShiftID
+CROSS APPLY
+(SELECT CASE WHEN a.OutDate IS NULL THEN 1 WHEN DATEDIFF(HOUR, a.InDate, a.OutDate) > 7 THEN 1 WHEN DATEDIFF(HOUR, a.InDate, a.OutDate) > 4 THEN 0.5 ELSE 0 END AS Att) x
+
+
+
+/*union
+Select -a.ID, b.UserName Employee, Convert(varchar(11),a.LeaveDate ,113) Date, 
+Convert(varchar(7),a.LeaveDate,111) Month,'00:00' InTime, '00:00' OutTime, Reason InRemarks,
+'' Image,'' Image2,
+ '' OutRemarks, a.UserID CUID, c.UserName EntryBy, a.CDT, 
+ 0 Att, LeaveType+'-'+a.Status Status, '' InLocation, ''
+from LeaveApp(NOLOCK) a
+  LEFT OUTER JOIN UserMaster(NOLOCK) b on a.UserID = b.UserID 
+  LEFT OUTER JOIN UserMaster(NOLOCK) c on a.CUID = c.UserID          
+*/
+
+
+
+//PropTypeName=~SMSDeliveryOn~ and PropValue like 'W%'
+
+===
+
+<link rel="stylesheet" media="all" type="text/css" href="timepicker.min.css" />							
+<script type="text/javascript" src="timepicker.min.js"></script>							
+<script type="text/javascript" src="sliderAccess.js"></script>		
+<script>
+$('.datetime').timepicker({
+    timeFormat: 'hh:mm TT',
+    controlType: 'select',
+    oneLine: true
+});
+
+function calcTotalWorkingHours() {
+    var startTime = $("#txtshiftmasterstarttime").val();
+    var endTime = $("#txtshiftmasterendtime").val();
+    var breakStart = $("#txtshiftmasterbreakstart").val();
+    var breakEnd = $("#txtshiftmasterbreakend").val();
+
+    if (!startTime || !endTime) {
+        return;
+    }
+
+    var start = new Date("01/01/2000 " + startTime);
+    var end = new Date("01/01/2000 " + endTime);
+
+    // End Time cannot be less than Start Time
+    if (end <= start) {
+        alert("End Time cannot be less than or equal to Start Time.");
+
+        $("#txtshiftmasterendtime").val('');
+        $("#txtshiftmastertotalworkinghours").val('');
+
+        return;
+    }
+
+    // Total shift minutes
+    var totalMinutes = (end - start) / (1000 * 60);
+
+    // Break minutes
+    if (breakStart && breakEnd) {
+        var bStart = new Date("01/01/2000 " + breakStart);
+        var bEnd = new Date("01/01/2000 " + breakEnd);
+
+        // Break End cannot be less than Break Start
+        if (bEnd <= bStart) {
+            alert("Break End Time cannot be less than or equal to Break Start Time.");
+
+            $("#txtshiftmasterbreakend").val('');
+            $("#txtshiftmastertotalworkinghours").val('');
+
+            return;
+        }
+
+        var breakMinutes = (bEnd - bStart) / (1000 * 60);
+
+        totalMinutes -= breakMinutes;
+    }
+
+    // Prevent negative working hours
+    if (totalMinutes < 0) {
+        alert("Break time cannot be greater than total shift time.");
+
+        $("#txtshiftmastertotalworkinghours").val('');
+        return;
+    }
+
+    var hours = Math.floor(totalMinutes / 60);
+    var minutes = totalMinutes % 60;
+
+    $("#txtshiftmastertotalworkinghours").val(
+        hours + ":" + String(minutes).padStart(2, "0")
+    );
+}
+
+function calcLateMarkAfter() {
+    var startTime = $("#txtshiftmasterstarttime").val();
+    var graceMinute = parseInt($("#txtshiftmastergraceinminute").val()) || 0;
+
+    var start = new Date("01/01/2000 " + startTime);
+
+    start.setMinutes(start.getMinutes() + graceMinute);
+
+    var hours = start.getHours();
+    var minutes = start.getMinutes();
+
+    var ampm = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours || 12;
+
+    var lateMarkAfter =
+        String(hours).padStart(2, "0") + ":" +
+        String(minutes).padStart(2, "0") + " " + ampm;
+
+    $("#txtshiftmasterlatemarkafter").val(lateMarkAfter);
+}
+
+function ISOverTime() {
+    var ot = $("#txtshiftmasterovertimeapplicable").val();
+
+    if (ot == 'Y') {
+        $("#txtshiftmasterovertimeafter")
+            .addClass("required")
+            .prop("disabled", false);
+    }
+    else {
+        $("#txtshiftmasterovertimeafter")
+            .removeClass("required")
+            .prop("disabled", true)
+            .val('');
+    }
+}
+
+$(document).ready(function () {
+    ISOverTime();
+});
+</script>
+
+-----
+
+select  dbo.Fetch_TodayDepartmentWiseAttendanceHTML(1,1)
+
+CREATE FUNCTION dbo.Fetch_TodayDepartmentWiseAttendanceHTML(@UserID NUMERIC,@BranchID VARCHAR(8000))
+RETURNS NVARCHAR(MAX)
+AS
+BEGIN
+    DECLARE @HTML NVARCHAR(MAX) = N''
+    DECLARE @Total INT, @PTotal INT
+    DECLARE @Color NVARCHAR(20)
+    SELECT @Total = count(distinct a.EmployeeID ) FROM Attendance(nolock) a 
+	left outer join EmployeeMaster(nolock) b on a.EmployeeID  = b.UserID
+	, dbo.ufn_StrToTable(@BranchID) br Where b.BranchID = br.c1 and Convert(date,a.InDate) = convert(date,getdate())
+	SELECT @PTotal = count(distinct a.EmployeeID ) FROM Attendance(nolock) a 
+	left outer join EmployeeMaster(nolock) b on a.EmployeeID  = b.UserID
+	, dbo.ufn_StrToTable(@BranchID) br Where b.BranchID = br.c1 and Convert(date,a.InDate) = convert(date,getdate()) and a.OutDate is null
+	
+    IF @Total <= 10
+        SET @Color = 'red';
+    ELSE IF @Total <= 20
+        SET @Color = 'orange';
+    ELSE
+        SET @Color = 'green';
+
+    SET @HTML = N'Present: ' + CAST(@PTotal AS NVARCHAR(10)) +
+                N'<br>Attend: ' + CAST(@Total AS NVARCHAR(10))
+    RETURN @HTML
+END;
+
+
+PropTypeName=~WeekOff~ and PropValue like 'D%'
+PropTypeName=~SMSDeliveryOn~ and PropValue like 'W%'
+
+attendace : 
+
+SELECT a.ID, a.EmployeeID, b.EmployeeName   Employee, Convert(nvarchar(17),a.InDate,113) InDate, Convert(varchar(11),a.InDate,113) Date,b.BranchID,
+Convert(varchar(7),a.InDate,111) Month,replace(Convert(varchar(17),a.InDate,113),' 20','') InTime, a.InRemarks, a.InImage, a.InLocation, Convert(nvarchar(17),a.OutDate,113) OutDate,
+ a.OutRemarks, a.OutImage, a.OutLocation, a.EmployeeID CUID, c.UserName EntryBy, a.CDT, Um.UserName,CONVERT(varchar(8), a.OutDate - a.InDate, 108) AS TotalTime,
+ case when a.OutDate is null then 1 When datediff(Hour,InDate,OutDate) >5 then 1 When datediff(Hour,InDate,OutDate) >4 and datediff(Hour,InDate,OutDate) < 1 then 0.5 else 0 end Att,Convert(varchar(5),a.OutDate,108) OutTime  ,
+Convert(varchar(20),a.EmployeeID) +',' + Convert(varchar(11),a.InDate,113)  AID
+  FROM Attendance(NOLOCK) a   
+  LEFT OUTER JOIN EmployeeMaster(NOLOCK) b on a.EmployeeID = b.UserID  
+    LEFT OUTER JOIN UserMaster(NOLOCK) UM on UM.UserID = b.UserID 
+  LEFT OUTER JOIN UserMaster(NOLOCK) c on a.CUID = c.UserID 
+
+  viewpunch 
+
+  CREATE   VIEW [dbo].[ViewPunchIn]
+AS
+
+/* ================================================================
+   STEP 1 : RANK ATTENDANCE RECORDS
+   ================================================================ */
+
+WITH AttendanceRanked AS
+(
+    SELECT
+        a.*,
+
+        /* --------------------------------------------------------
+           FIRST PUNCH OF THE DAY
+           -------------------------------------------------------- */
+        ROW_NUMBER() OVER
+        (
+            PARTITION BY
+                a.EmployeeID,
+                CONVERT(DATE, a.InDate)
+
+            ORDER BY
+                a.InDate ASC,
+                a.ID ASC
+        ) AS RN_First,
+
+
+        /* --------------------------------------------------------
+           LAST PUNCH OF THE DAY
+           -------------------------------------------------------- */
+        ROW_NUMBER() OVER
+        (
+            PARTITION BY
+                a.EmployeeID,
+                CONVERT(DATE, a.InDate)
+
+            ORDER BY
+                a.InDate DESC,
+                a.ID DESC
+        ) AS RN_Last
+
+    FROM Attendance(NOLOCK) a
+),
+
+
+/* ================================================================
+   STEP 2 : MERGE FIRST + LAST ATTENDANCE
+   ================================================================ */
+
+AttendanceFinal AS
+(
+    SELECT
+
+        /* FIRST RECORD ID */
+        f.ID AS ID,
+
+        /* LAST RECORD ID */
+        l.ID AS OutID,
+
+        f.EmployeeID,
+
+        /* FIRST PUNCH DETAILS */
+        f.InDate,
+        f.InRemarks,
+        f.InImage,
+        f.InLocation,
+
+        /* LAST PUNCH DETAILS */
+        l.OutDate,
+        l.OutRemarks,
+        l.OutImage,
+
+        /* OTHER DETAILS */
+        ISNULL
+        (
+            f.CUID,
+            f.EmployeeID
+        ) AS CUID,
+
+        f.CDT,
+
+        /* ATTENDANCE CALCULATION FIELDS */
+        f.WorkingHours,
+        f.BreakHours,
+        f.OverTime,
+        f.LateIn,
+        f.EarlyOut
+
+    FROM AttendanceRanked f
+
+    INNER JOIN AttendanceRanked l
+        ON l.EmployeeID = f.EmployeeID
+        AND CONVERT(DATE, l.InDate)
+            = CONVERT(DATE, f.InDate)
+        AND l.RN_Last = 1
+
+    WHERE f.RN_First = 1
+)
+
+
+/* ================================================================
+   FINAL SELECT
+   ================================================================ */
+
+SELECT
+
+    /* ============================================================
+       BASIC DETAILS
+       ============================================================ */
+
+    a.ID,
+
+    b.UserName AS Employee,
+
+    CONVERT
+    (
+        varchar(11),
+        a.InDate,
+        113
+    ) AS Date,
+
+    CONVERT
+    (
+        varchar(7),
+        a.InDate,
+        111
+    ) AS Month,
+
+    CONVERT
+    (
+        varchar(5),
+        a.InDate,
+        108
+    ) AS InTime,
+
+    CONVERT
+    (
+        varchar(5),
+        a.OutDate,
+        108
+    ) AS OutTime,
+
+
+    /* ============================================================
+       FIRST PUNCH DETAILS
+       ============================================================ */
+
+    a.InRemarks,
+
+    'fileupload/1/Attendance/'
+        + CONVERT(varchar(20), a.ID)
+        + '/'
+        + CONVERT(varchar(20), a.InImage)
+        AS Image,
+
+
+    /* ============================================================
+       LAST PUNCH DETAILS
+       ============================================================ */
+
+    'fileupload/1/Attendance/'
+        + CONVERT(varchar(20), a.OutID)
+        + '/'
+        + CONVERT(varchar(20), a.OutImage)
+        AS Image2,
+
+    a.OutRemarks,
+
+    ISNULL
+    (
+        a.CUID,
+        a.EmployeeID
+    ) AS CUID,
+
+    c.UserName AS EntryBy,
+
+    a.CDT,
+
+
+    /* ============================================================
+       ATTENDANCE
+       ============================================================ */
+
+    x.Att,
+
+
+    /* ============================================================
+       STATUS
+       ============================================================ */
+
+    CASE
+
+    WHEN a.InDate IS NOT NULL
+             AND a.OutDate IS NULL
+             AND CONVERT(DATE, a.InDate)
+                 = CONVERT(DATE, GETDATE())
+        THEN 'Working'
+
+        WHEN a.InDate IS NOT NULL
+             AND a.OutDate IS NULL
+        THEN 'Punch Missing'
+
+        WHEN x.Att = 1
+        THEN 'FullDay'
+
+        WHEN x.Att = 0.5
+        THEN 'Half'
+
+        ELSE 'Leave'
+
+    END AS Status,
+
+
+    /* ============================================================
+       LOCATION
+       ============================================================ */
+
+    a.InLocation,
+
+
+    /* ============================================================
+       WORKING HOURS
+       ============================================================ */
+
+    CASE
+
+        WHEN a.WorkingHours IS NULL
+        THEN '00:00'
+
+        WHEN LTRIM(RTRIM(a.WorkingHours)) = ''
+        THEN '00:00'
+
+        WHEN a.WorkingHours LIKE '%-%'
+        THEN '00:00'
+
+        WHEN a.WorkingHours LIKE '%*%'
+        THEN '00:00'
+
+        WHEN a.WorkingHours IN
+        (
+            '00:00',
+            '0:00'
+        )
+        THEN '00:00'
+
+        ELSE a.WorkingHours
+
+    END AS WorkingHours,
+
+
+    /* ============================================================
+       BREAK HOURS
+       ============================================================ */
+
+    CASE
+
+        WHEN a.BreakHours IS NULL
+        THEN '00:00'
+
+        WHEN LTRIM(RTRIM(a.BreakHours)) = ''
+        THEN '00:00'
+
+        WHEN a.BreakHours LIKE '%-%'
+        THEN '00:00'
+
+        WHEN a.BreakHours LIKE '%*%'
+        THEN '00:00'
+
+        WHEN a.BreakHours IN
+        (
+            '00:00',
+            '0:00'
+        )
+        THEN '00:00'
+
+        ELSE a.BreakHours
+
+    END AS BreakHours,
+
+
+    /* ============================================================
+       OVERTIME
+       ============================================================ */
+
+    CASE
+
+        WHEN a.OverTime IS NULL
+        THEN '00:00'
+
+        WHEN LTRIM(RTRIM(a.OverTime)) = ''
+        THEN '00:00'
+
+        WHEN a.OverTime LIKE '%-%'
+        THEN '00:00'
+
+        WHEN a.OverTime LIKE '%*%'
+        THEN '00:00'
+
+        WHEN a.OverTime IN
+        (
+            '00:00',
+            '0:00'
+        )
+        THEN '--:--'
+
+        ELSE a.OverTime
+
+    END AS OverTime,
+
+
+    /* ============================================================
+       LATE IN
+       ============================================================ */
+
+    CASE
+
+        WHEN a.LateIn IS NULL
+        THEN '00:00'
+
+        WHEN LTRIM(RTRIM(a.LateIn)) = ''
+        THEN '00:00'
+
+        WHEN a.LateIn LIKE '%-%'
+        THEN '00:00'
+
+        WHEN a.LateIn LIKE '%*%'
+        THEN '00:00'
+
+        WHEN a.LateIn IN
+        (
+            '00:00',
+            '0:00'
+        )
+        THEN '00:00'
+
+        ELSE a.LateIn
+
+    END AS LateIn,
+
+
+    /* ============================================================
+       EARLY OUT
+       ============================================================ */
+
+    CASE
+
+        WHEN a.EarlyOut IS NULL
+        THEN '00:00'
+
+        WHEN LTRIM(RTRIM(a.EarlyOut)) = ''
+        THEN '00:00'
+
+        WHEN a.EarlyOut LIKE '%-%'
+        THEN '00:00'
+
+        WHEN a.EarlyOut LIKE '%*%'
+        THEN '00:00'
+
+        WHEN a.EarlyOut IN
+        (
+            '00:00',
+            '0:00'
+        )
+        THEN '00:00'
+
+        ELSE a.EarlyOut
+
+    END AS EarlyOut,
+
+
+    /* ============================================================
+       PUNCH STATUS
+       ============================================================ */
+
+    CASE
+
+        WHEN a.InDate IS NOT NULL
+             AND a.OutDate IS NULL
+             AND CONVERT(DATE, a.InDate)
+                 = CONVERT(DATE, GETDATE())
+        THEN
+            CASE
+
+                WHEN d.LateMarkAfter IS NOT NULL
+                     AND CAST(a.InDate AS TIME)
+                         > CAST(d.LateMarkAfter AS TIME)
+                THEN 'Late In'
+
+                ELSE 'Checked In'
+
+            END
+
+
+   WHEN a.InDate IS NOT NULL
+             AND a.OutDate IS NULL
+        THEN 'Missing Checkout'
+
+
+        WHEN x.Att = 0
+        THEN 'Leave'
+
+
+        WHEN x.Att = 0.5
+        THEN
+            CASE
+
+                WHEN d.HalfDayAfter IS NOT NULL
+                     AND CAST(a.InDate AS TIME)
+                         < CAST(d.HalfDayAfter AS TIME)
+                     AND a.OutDate IS NOT NULL
+                     AND CAST(a.OutDate AS TIME)
+                         >= CAST(d.HalfDayAfter AS TIME)
+                THEN 'First half'
+
+
+                WHEN d.HalfDayAfter IS NOT NULL
+                     AND CAST(a.InDate AS TIME)
+                         >= CAST(d.HalfDayAfter AS TIME)
+                THEN 'Second half'
+
+
+                ELSE 'Half Day'
+
+            END
+
+
+        WHEN a.InDate IS NOT NULL
+             AND a.OutDate IS NOT NULL
+             AND d.LateMarkAfter IS NOT NULL
+             AND d.EndTime IS NOT NULL
+             AND CAST(a.InDate AS TIME)
+                 > CAST(d.LateMarkAfter AS TIME)
+             AND CAST(a.OutDate AS TIME)
+                 < CAST(d.EndTime AS TIME)
+        THEN 'Late In + Early Out'
+
+
+        WHEN a.InDate IS NOT NULL
+             AND a.OutDate IS NOT NULL
+             AND d.LateMarkAfter IS NOT NULL
+             AND d.OverTimeAfter IS NOT NULL
+             AND CAST(a.InDate AS TIME)
+                 > CAST(d.LateMarkAfter AS TIME)
+             AND d.OverTimeApplicable = 'Y'
+             AND CAST(a.OutDate AS TIME)
+                 > CAST(d.OverTimeAfter AS TIME)
+        THEN 'Late In + Overtime'
+
+
+        WHEN a.OutDate IS NOT NULL
+             AND d.OverTimeAfter IS NOT NULL
+             AND d.OverTimeApplicable = 'Y'
+             AND CAST(a.OutDate AS TIME)
+                 > CAST(d.OverTimeAfter AS TIME)
+        THEN 'Overtime'
+
+
+        WHEN a.InDate IS NOT NULL
+             AND d.LateMarkAfter IS NOT NULL
+             AND CAST(a.InDate AS TIME)
+                 > CAST(d.LateMarkAfter AS TIME)
+        THEN 'Late In'
+
+
+        WHEN a.OutDate IS NOT NULL
+             AND d.EndTime IS NOT NULL
+             AND CAST(a.OutDate AS TIME)
+                 < CAST(d.EndTime AS TIME)
+        THEN 'Early Out'
+
+
+        WHEN x.Att = 1
+        THEN 'Present'
+
+
+        ELSE ''
+
+    END AS PunchStatus,
+
+
+    /* ============================================================
+       SHIFT DETAILS - ViewUserShift
+       ============================================================ */
+    US.WeeklyOffValue,
+
+    US.WeekOff,
+
+
+    US.HolidayCalender
+
+
+FROM AttendanceFinal a
+
+
+/* ================================================================
+   USER MASTER
+   ================================================================ */
+
+LEFT OUTER JOIN UserMaster(NOLOCK) b
+    ON a.EmployeeID = b.UserID
+
+
+/* ================================================================
+   ENTRY USER
+   ================================================================ */
+
+LEFT OUTER JOIN UserMaster(NOLOCK) c
+    ON a.CUID = c.UserID
+
+
+/* ================================================================
+   SHIFT MASTER
+   ================================================================ */
+
+LEFT JOIN ShiftMaster(NOLOCK) d
+    ON d.SID = b.ShiftID
+
+
+/* ================================================================
+   VIEW USER SHIFT
+   ================================================================ */
+
+LEFT JOIN dbo.ViewUserShift US
+    ON US.UserID = a.EmployeeID
+
+
+/* ================================================================
+   ATTENDANCE CALCULATION
+   ================================================================ */
+
+CROSS APPLY
+(
+    SELECT
+
+        CASE
+
+            WHEN a.OutDate IS NULL
+            THEN 1
+
+            WHEN DATEDIFF
+            (
+                MINUTE,
+                a.InDate,
+                a.OutDate
+            ) > 420
+            THEN 1
+
+            WHEN DATEDIFF
+            (
+                MINUTE,
+                a.InDate,
+                a.OutDate
+            ) > 240
+            THEN 0.5
+
+            ELSE 0
+
+        END AS Att
+
+) x;
