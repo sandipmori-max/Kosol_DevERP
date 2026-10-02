@@ -124,8 +124,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     attendanceDone,
   } = useAppSelector((state) => state.auth);
 
-
-  console.log("listLeaveBalDatalistLeaveBalDatalistLeaveBalDatalistLeaveBalData", listLeaveBalData)
   const runAI = async () => {
     try {
       const message = await getDashboardAI(dashboard);
@@ -201,15 +199,15 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
-  useEffect(() => {
-    if (!dashboard || aiCalled.current) return;
-    const timer = setTimeout(() => {
-      runAI();
-      aiCalled.current = true;
-    }, 19000);
+  // useEffect(() => {
+  //   if (!dashboard || aiCalled.current) return;
+  //   const timer = setTimeout(() => {
+  //     runAI();
+  //     aiCalled.current = true;
+  //   }, 19000);
 
-    return () => clearTimeout(timer);
-  }, [dashboard]);
+  //   return () => clearTimeout(timer);
+  // }, [dashboard]);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -221,10 +219,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      // dispatch(setActiveDashboardBranchId(""));
-      // dispatch(setActiveDashboardBranch(""));
-      // dispatch(setActiveDashboardType(""));
-      // dispatch(setActiveDashboardTypeId(""));
       setIsFilterVisible(true);
       setShowFull(true);
       setIsHorizontal(false);
@@ -1083,60 +1077,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     [],
   );
 
-  const uniqueByDate = useMemo(() => {
-    if (listData.length === 0) return [];
-
-    const priority = {
-      FullDay: 4,
-      Half: 3,
-      Working: 2,
-      "Punch Missing": 1,
-      Leave: 0,
-    };
-
-    return Object.values(
-      listData.reduce((acc, item) => {
-        const key = item.date;
-
-        if (
-          !acc[key] ||
-          (priority[item.status] || 0) > (priority[acc[key].status] || 0)
-        ) {
-          acc[key] = item;
-        }
-
-        return acc;
-      }, {}),
-    );
-  }, [listData]);
-
-  const leave = useMemo(
-    () =>
-      uniqueByDate.filter((i) => i?.status?.toLowerCase() === "leave").length,
-    [uniqueByDate],
-  );
-
-  const late = useMemo(
-    () =>
-      uniqueByDate.filter((i) => i?.intime && isLatePunchIn(i?.intime)).length,
-    [uniqueByDate],
-  );
-
-  const lessHours = useMemo(
-    () =>
-      uniqueByDate.filter(
-        (i) =>
-          i?.intime &&
-          i?.outtime &&
-          getWorkedHours(i?.intime, i?.outtime) < 8.5,
-      ).length,
-    [uniqueByDate],
-  );
-
-  const present = useMemo(
-    () => uniqueByDate.length - leave,
-    [uniqueByDate, leave],
-  );
   const [tempDate, setTempDate] = useState(new Date());
 
   useEffect(() => {
@@ -1157,7 +1097,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
     return final?.data || final || [];
   };
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1282,30 +1221,24 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   const intervalRef = useRef(null);
 
   useEffect(() => { 
-
      const updateWorkingTime = () => {
       const now = new Date();
-
       if (now >= breakStart && now < breakEnd) {
         setWorkingTime("Break Time");
         return;
       }
-
       let diff = now.getTime() - inTimeDate.getTime();
-
+      console.log("diffdiffdiffdiffdiffdiff", inTimeDate)
       if (now >= breakEnd) {
         diff -= 60 * 60 * 1000;
       }
-
       if (diff <= 0) {
         setWorkingTime("00:00:00");
         return;
       }
-
       const hrs = Math.floor(diff / (1000 * 60 * 60));
       const mins = Math.floor((diff / (1000 * 60)) % 60);
       const secs = Math.floor((diff / 1000) % 60);
-
       setWorkingTime(
         `${String(hrs).padStart(2, "0")}:${String(mins).padStart(
           2,
@@ -1315,64 +1248,42 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     };
 
     if (!attendance?.intime) return;
-
+    console.log("attendanceattendance", attendance)
     const [hours, minutes] = attendance?.intime.split(":").map(Number);
-
     const inTimeDate = new Date();
     inTimeDate.setHours(hours, minutes, 0, 0);
-
     const shift = listShiftData && listShiftData[0];
-
     if(!shift){
         const breakStart = new Date();
         breakStart.setHours(13, 30, 0, 0);
         const breakEnd = new Date();
         breakEnd.setHours(14, 30, 0, 0);
         updateWorkingTime();
-
          intervalRef.current = setInterval(updateWorkingTime, 1000);
-
         return () => clearInterval(intervalRef.current);
-       
     } 
     const breakStart = new Date();
-
     const [time, modifier] = shift?.breakstart.split(" ");
-
     let [brhours, brminutes] = time.split(":").map(Number);
-
     if (modifier === "PM" && hours !== 12) {
       brhours += 12;
     }
-
     if (modifier === "AM" && hours === 12) {
       brhours = 0;
     }
-
     breakStart.setHours(brhours, brminutes, 0, 0);
-
-
     const breakEnd = new Date();
-
     const [brendtime, brendmodifier] = shift.breakend.split(" ");
     let [brendhours, brendminutes] = brendtime.split(":").map(Number);
-
     if (brendmodifier === "PM" && hours !== 12) {
       brendhours += 12;
     }
-
     if (modifier === "AM" && hours === 12) {
       brendhours = 0;
     }
-
     breakEnd.setHours(brendhours, brendminutes, 0, 0);
-
-   
-
     updateWorkingTime();
-
     intervalRef.current = setInterval(updateWorkingTime, 1000);
-
     return () => clearInterval(intervalRef.current);
   }, [attendance?.intime, listShiftData]);
 
@@ -2828,50 +2739,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                   </View>
                                 </>
                               )}
-                            {/* {attendance?.intime && (
-                            <View
-                              style={{
-                                // backgroundColor: "#f5f5f5",
-                                borderRadius: 4,
-                                marginTop: 2,
-                                marginBottom: 2,
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 4,
-                                width: "94%",
-                                marginLeft: 12,
-                                paddingVertical: 4,
-                                borderWidth: 0.4,
-                                borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-                              }}
-                            >
-                              <View
-                                style={[
-                                  styles.iconTimeContainer,
-                                  {
-                                    marginLeft: 4,
-                                    backgroundColor:
-                                      theme === "dark" ? "gray" : "#f5f5f5",
-                                  },
-                                ]}
-                              >
-                                <MaterialIcons
-                                  name="location-on"
-                                  size={22}
-                                  color={ERP_COLOR_CODE.ERP_ERROR}
-                                />
-                              </View>
-                              <View style={{ width: "88%" }}>
-                                <Text
-                                  style={{
-                                    color: theme === "dark" ? "white" : "black",
-                                  }}
-                                >
-                                  ---
-                                </Text>
-                              </View>
-                            </View>
-                          )} */}
+                            
                              
                             {
                               attendance?.intime && (
@@ -3011,7 +2879,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                 </>
 
                               )}
-
 
 
                             {
