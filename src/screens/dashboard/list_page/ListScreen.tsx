@@ -9,9 +9,6 @@ import {
   Animated,
   ActivityIndicator,
   useWindowDimensions,
-  PanResponder,
-  Dimensions,
-  Image,
   ScrollView,
 } from "react-native";
 import React, {
@@ -62,7 +59,11 @@ import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
 import TableView from "./components/TableView";
 import GroupFilterModal from "./components/GroupFilterModal";
 import SortingFilterModal from "./components/SortingFilterModal";
-import DeviceInfo from "react-native-device-info"; 
+import DeviceInfo from "react-native-device-info";
+
+
+const isIpad =
+  (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
 
 const SearchInput = React.memo(
   ({
@@ -153,8 +154,8 @@ const ListScreen = () => {
     error: actionError,
     response: actionResponse,
   } = useAppSelector((state) => state.page);
-  const isIpad =
-    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+
+
   const { t } = useTranslations();
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [loadingListId, setLoadingListId] = useState<string | null>(null);
@@ -181,56 +182,25 @@ const ListScreen = () => {
   const [tapLoader, setTapLoader] = useState(false);
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
-  const [primaryGroupKey, setPrimaryGroupKey] =
-    useState("");
+  const [primaryGroupKey, setPrimaryGroupKey] = useState("");
+  const [secondaryGroupKey, setSecondaryGroupKey] = useState("");
+  const [groupModalVisible1, setGroupModalVisible1] = useState(false);
+  const [groupModalVisible2, setGroupModalVisible2] = useState(false);
+  const [sortingVisible, setSortingVisible] = useState(false);
+  const [sortingKey, setSortingKey] = useState("");
 
-  const [secondaryGroupKey, setSecondaryGroupKey] =
-    useState("");
-  const [groupModalVisible1, setGroupModalVisible1] =
-    useState(false);
-  const [groupModalVisible2, setGroupModalVisible2] =
-    useState(false);
-
-  const [sortingVisible, setSortingVisible] =
-    useState(false);
-  const [sortingKey, setSortingKey] =
-    useState("");
-
-  const [bottomSheetType, setBottomSheetType] = useState('');
-  const [showInfoModal, setShowInfoModal] = useState(false);
   const sheetProgress = useRef(
     new Animated.Value(0),
   ).current;
-  const [showLoginSheet, setShowLoginSheet] = useState(false);
-  const [confirmation, setConfirmation] = useState<any>()
-  const [selected, setSelected] = useState<"yes" | "no" | null>(null);
-
-  const sheetTranslateY =
-    sheetProgress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [400, 0],
-    });
 
   const openSheet = () => {
-    setSelectedLoginType("")
-    setShowLoginSheet(true);
     sheetProgress.setValue(0);
-
     Animated.timing(sheetProgress, {
       toValue: 1,
       duration: 300,
       useNativeDriver: true,
     }).start();
   };
-
-  const closeSheet = () => {
-    setShowLoginSheet(false);
-    setConfirmation(false)
-    setSelected(null)
-    setTapLoader(false)
-  };
-
-  const [selectedLoginType, setSelectedLoginType] = useState();
 
   const availableKeys = Object.keys(
     filteredData?.[0] || {},
@@ -266,7 +236,6 @@ const ListScreen = () => {
   const pageParamsName = item?.name || "List Data";
   const pageName = item?.url;
 
-  console.log("ListScreen params-----------", item);
   const isFromBusinessCard = item?.isFromBusinessCard || false;
   const isFromAlertCard = item?.isFromAlertCard || false;
 
@@ -292,33 +261,20 @@ const ListScreen = () => {
       useNativeDriver: true,
     }).start();
   };
-  // useEffect(() => {
-  //   if (!filteredData) return;
-  //   setPage(1);
-  //   setHasMore(true);
-
-  //   const firstPage = filteredData.slice(0, pageSize);
-  //   setListData(firstPage);
-  // }, [filteredData]);
 
   const loadMore = () => {
     if (isLoadingMore || !hasMore) return;
-
     setIsLoadingMore(true);
-
     setTimeout(() => {
       const start = page * pageSize;
       const end = start + pageSize;
-
       const newItems = filteredData.slice(start, end);
-
       if (newItems.length === 0) {
         setHasMore(false);
       } else {
         setListData((prev) => [...prev, ...newItems]);
         setPage((prev) => prev + 1);
       }
-
       setIsLoadingMore(false);
     }, 300);
   };
@@ -343,12 +299,8 @@ const ListScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      // dispatch(updateSelectedFromDateState(""));
-      // dispatch(updateSelectedToDateState(""));
-      // dispatch(updateSelectedBranchesState([]));
       setTapLoader(false);
       setSelectedStatus("All")
-
       return () => { };
     }, [navigation]),
   );
@@ -358,11 +310,8 @@ const ListScreen = () => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-        // borderBottomWidth: 1,
         borderBottomColor: "#fff",
-
       },
-
       headerBackTitle: "",
       headerTintColor: "#fff",
       headerTitleAlign: "left",
@@ -390,17 +339,20 @@ const ListScreen = () => {
             />
           )}
           {
-            <ERPIcon
+            !actionLoaders && <ERPIcon
               name={isTableView ? 'list' : 'apps'}
               onPress={() => {
+                setActionLoader(true);
                 onRefresh();
-                setSelectedStatus("All")
-                setIsTableView(!isTableView);
+                setTimeout(() => {
+                  setSelectedStatus("All")
+                  setIsTableView(!isTableView);
+                }, 100)
               }}
             />
           }
           {
-            isTableView && <ERPIcon
+            !actionLoaders && isTableView && <ERPIcon
               name={'G1'}
               onPress={() => {
                 setGroupModalVisible1(true)
@@ -408,7 +360,7 @@ const ListScreen = () => {
             />
           }
           {
-            primaryGroupKey && isTableView && <ERPIcon
+            !actionLoaders && primaryGroupKey && isTableView && <ERPIcon
               name={'G2'}
               onPress={() => {
                 setGroupModalVisible2(true)
@@ -416,7 +368,7 @@ const ListScreen = () => {
             />
           }
           {
-           (parsedConfig?.newentry === 1 || parsedConfig?.newentry === "1") && isTableView && <ERPIcon
+            !actionLoaders && (parsedConfig?.newentry === 1 || parsedConfig?.newentry === "1") && isTableView && <ERPIcon
               name={'add'}
               onPress={() => {
                 setTapLoader(true);
@@ -543,50 +495,43 @@ const ListScreen = () => {
     }
   };
 
-  const statusOptions = useMemo(() => {
-    const uniqueStatus = [
-      ...new Set(
-        listData
-          .map(item => item?.status?.toString().trim())
-          .filter(status => !!status)
-      ),
-    ];
+const statusOptions = useMemo(() => {
+  const uniqueStatus = [
+    ...new Set(
+      listData
+        .map(item => item?.status?.toString().trim())
+        .filter(Boolean)
+    ),
+  ];
 
-    return uniqueStatus.length > 0
-      ? ["All", ...uniqueStatus]
-      : [];
-  }, [listData]);
-
-  console.log("statusOptionsstatusOptionsstatusOptions", statusOptions)
+  return uniqueStatus.length > 0
+    ? ["All", ...uniqueStatus.sort((a, b) => a.localeCompare(b))]
+    : [];
+}, [listData]);
 
   const handleStatusChange = (status) => {
-     setSearchQuery("")
-      setSortingKey("")
-      setPrimaryGroupKey("")
-      setSecondaryGroupKey("")
-      setSelectedStatus("All")
-      setSortConfig(null)
+    setSearchQuery("")
+    setSortingKey("")
+    setPrimaryGroupKey("")
+    setSecondaryGroupKey("")
+    setSelectedStatus("All")
+    setSortConfig(null)
     setSelectedStatus(status);
     applyFilters(searchQuery, status);
-    
+
   };
-
-
 
   const applyFilters = (
     search = searchQuery,
     status = selectedStatus,
   ) => {
     let data = [...listData];
-
-    // Status Filter
     if (status !== "All") {
       data = data.filter(
         item => item?.status === status,
       );
     }
 
-    // Search Filter
     if (search.trim()) {
       const q = search.toLowerCase();
 
@@ -659,135 +604,80 @@ const ListScreen = () => {
     }
   };
 
-  // const debouncedSearch = useCallback(
-  //   useMemo(() => {
-  //     let timeoutId: NodeJS.Timeout;
-
-  //     return (query: string, data: any[]) => {
-  //       clearTimeout(timeoutId);
-
-  //       timeoutId = setTimeout(() => {
-  //         const trimmedQuery = query.trim();
-
-  //         if (trimmedQuery === "") {
-  //           setFilteredData(data);
-  //           return;
-  //         }
-
-  //         const keySearchMatch = trimmedQuery?.match(/^(\w+):(.+)$/);
-  //         let filtered;
-
-  //         if (keySearchMatch) {
-  //           const [, key, value] = keySearchMatch;
-  //           const lowerValue = value.trim().toLowerCase();
-
-  //           filtered = data?.filter((item) => {
-  //             const fieldValue = item[key];
-  //             if (!fieldValue) return false;
-
-  //             const stringValue =
-  //               typeof fieldValue === "object"
-  //                 ? JSON.stringify(fieldValue)
-  //                 : String(fieldValue);
-
-  //             return stringValue.toLowerCase().includes(lowerValue);
-  //           });
-  //         } else {
-  //           filtered = data?.filter((item) => {
-  //             const allValues = Object.values(item)
-  //               .map((val) => {
-  //                 if (typeof val === "object" && val !== null)
-  //                   return JSON.stringify(val);
-  //                 if (val === null || val === undefined) return "";
-  //                 return String(val);
-  //               })
-  //               .join(" ")
-  //               .toLowerCase();
-  //             return allValues?.includes(trimmedQuery?.toLowerCase());
-  //           });
-  //         }
-  //         setFilteredData(filtered);
-  //       }, 300);
-  //     };
-  //   }, []),
-  //   [],
-  // );
-
-
   const searchTimeoutRef = useRef<any>(null);
 
-const debouncedSearch = useCallback(
-  (query: string, data: any[]) => {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    searchTimeoutRef.current = setTimeout(() => {
-      const trimmedQuery = query.trim();
-
-      if (trimmedQuery === "") {
-        setFilteredData(data);
-        return;
+  const debouncedSearch = useCallback(
+    (query: string, data: any[]) => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
       }
 
-      const keySearchMatch = trimmedQuery.match(/^(\w+):(.+)$/);
+      searchTimeoutRef.current = setTimeout(() => {
+        const trimmedQuery = query.trim();
 
-      let filtered;
+        if (trimmedQuery === "") {
+          setFilteredData(data);
+          return;
+        }
 
-      if (keySearchMatch) {
-        const [, key, value] = keySearchMatch;
-        const lowerValue = value.trim().toLowerCase();
+        const keySearchMatch = trimmedQuery.match(/^(\w+):(.+)$/);
 
-        filtered = data.filter((item) => {
-          const fieldValue = item?.[key];
+        let filtered;
 
-          if (!fieldValue) {
-            return false;
-          }
+        if (keySearchMatch) {
+          const [, key, value] = keySearchMatch;
+          const lowerValue = value.trim().toLowerCase();
 
-          const stringValue =
-            typeof fieldValue === "object"
-              ? JSON.stringify(fieldValue)
-              : String(fieldValue);
+          filtered = data.filter((item) => {
+            const fieldValue = item?.[key];
 
-          return stringValue.toLowerCase().includes(lowerValue);
-        });
-      } else {
-        const lowerQuery = trimmedQuery.toLowerCase();
+            if (!fieldValue) {
+              return false;
+            }
 
-        filtered = data.filter((item) => {
-          const allValues = Object.values(item)
-            .map((val) => {
-              if (typeof val === "object" && val !== null) {
-                return JSON.stringify(val);
-              }
+            const stringValue =
+              typeof fieldValue === "object"
+                ? JSON.stringify(fieldValue)
+                : String(fieldValue);
 
-              if (val === null || val === undefined) {
-                return "";
-              }
+            return stringValue.toLowerCase().includes(lowerValue);
+          });
+        } else {
+          const lowerQuery = trimmedQuery.toLowerCase();
 
-              return String(val);
-            })
-            .join(" ")
-            .toLowerCase();
+          filtered = data.filter((item) => {
+            const allValues = Object.values(item)
+              .map((val) => {
+                if (typeof val === "object" && val !== null) {
+                  return JSON.stringify(val);
+                }
 
-          return allValues.includes(lowerQuery);
-        });
+                if (val === null || val === undefined) {
+                  return "";
+                }
+
+                return String(val);
+              })
+              .join(" ")
+              .toLowerCase();
+
+            return allValues.includes(lowerQuery);
+          });
+        }
+
+        setFilteredData(filtered);
+      }, 300);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
       }
-
-      setFilteredData(filtered);
-    }, 300);
-  },
-  [],
-);
-
-useEffect(() => {
-  return () => {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-  };
-}, []);
+    };
+  }, []);
 
   const onRefresh = async () => {
     try {
@@ -803,38 +693,27 @@ useEffect(() => {
     }
   };
 
-  // const handleSearchChange = (text: string) => {
-  //   setSelectedStatus('All')
-  //   setSearchQuery(text);
-  //   debouncedSearch(text, listData);
-  // };
-
   const handleSearchChange = useCallback(
-  (text: string) => {
-    setSearchQuery(text);
+    (text: string) => {
+      setSearchQuery(text);
 
-    if (selectedStatus !== "All") {
-      setSelectedStatus("All");
-    }
+      if (selectedStatus !== "All") {
+        setSelectedStatus("All");
+      }
 
-    debouncedSearch(text, listData);
-  },
-  [debouncedSearch, listData, selectedStatus],
-);
+      debouncedSearch(text, listData);
+    },
+    [debouncedSearch, listData, selectedStatus],
+  );
 
-  // const clearSearch = () => {
-  //   setSearchQuery("");
-  //   setFilteredData(listData);
-
-  // };
 
   const clearSearch = useCallback(() => {
-  setSearchQuery("");
-  setFilteredData(listData);
-}, [listData]);
+    setSearchQuery("");
+    setFilteredData(listData);
+  }, [listData]);
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
-     setSelectedStatus("All")
+    setSelectedStatus("All")
 
     if (event?.type === "dismissed" || !selectedDate) {
       setShowDatePicker(null);
@@ -1025,7 +904,7 @@ useEffect(() => {
     setSortingKey("")
     setSortConfig(null)
     // setIsFilterVisible(false);
-    setSearchQuery(""); 
+    setSearchQuery("");
     if (parsedConfig?.newentry === 1 || parsedConfig?.newentry === "1") {
       navigation.navigate("Page", {
         item,
@@ -1039,31 +918,81 @@ useEffect(() => {
     }
   };
 
-  const handleActionButtonPressed = (actionValue, label, color, id, item) => {
-    if (item?.btn_edit && item?.btn_edit?.includes("/")) {
-      const left = item?.btn_edit.substring(0, item?.btn_edit.indexOf("/"));
-      const result = item?.btn_edit.split("/")[1];
+  // const handleActionButtonPressed = (actionValue, label, color, id, item) => {
+
+  //   console.log("dddddddfdfdfdfd", item)
+  //   if (item?.btn_edit && item?.btn_edit?.includes("/")) {
+  //     const left = item?.btn_edit.substring(0, item?.btn_edit.indexOf("/"));
+  //     const result = item?.btn_edit.split("/")[1];
+  //     navigation.navigate("Page", {
+  //       item,
+  //       id: result,
+  //       title: pageName,
+  //       isFromNew: false,
+  //       url: left,
+  //       pageTitle: pageTitle,
+  //       isFromBusinessCard: false,
+  //       isFromProfile: false,
+  //     });
+  //   } else {
+  //     setAlertConfig({
+  //       title: label,
+  //       message: `${t("msg.msg8")} ${label.toLowerCase()} ?`,
+  //       type: "info",
+  //       actionValue: actionValue,
+  //       color: color,
+  //       id: id,
+  //     });
+  //     setAlertVisible(true);
+  //   }
+  // };
+
+
+  const handleActionButtonPressed = (
+    actionValue,
+    label,
+    color,
+    id,
+    item
+  ) => {
+
+    // item me btn_ se start hone wali value find karo
+    const buttonValue = Object.keys(item || {})
+      .filter((key) => key.startsWith("btn_"))
+      .map((key) => item[key])
+      .find((value) => value === actionValue);
+
+    if (buttonValue && buttonValue.includes("/")) {
+      const [left, result] = buttonValue.split("/");
+
+      const formattedTitle = left
+        .replace(/([a-z])([A-Z])/g, "$1 $2")
+        .replace(/_/g, " ");
+
       navigation.navigate("Page", {
         item,
         id: result,
-        title: pageName,
+        title: formattedTitle,
         isFromNew: false,
         url: left,
-        pageTitle: pageTitle,
+        pageTitle: formattedTitle,
         isFromBusinessCard: false,
         isFromProfile: false,
       });
-    } else {
-      setAlertConfig({
-        title: label,
-        message: `${t("msg.msg8")} ${label.toLowerCase()} ?`,
-        type: "info",
-        actionValue: actionValue,
-        color: color,
-        id: id,
-      });
-      setAlertVisible(true);
+
+      return;
     }
+
+    setAlertConfig({
+      title: label,
+      message: `${t("msg.msg8")} ${label.toLowerCase()} ?`,
+      type: "info",
+      actionValue,
+      color,
+      id,
+    });
+
+    setAlertVisible(true);
   };
 
   const handleDeleteNotification = async (item: any) => {
@@ -1155,7 +1084,7 @@ useEffect(() => {
     );
   }
 
-  if (loadingListId) {
+  if (actionLoaders || loadingListId) {
     return <FullViewLoader isShowTop={theme === "dark" ? false : true} />;
   }
 
@@ -1166,7 +1095,6 @@ useEffect(() => {
         theme === "dark" && { backgroundColor: "black" },
       ]}
     >
-
 
       {
         !isLandscape && !isFilterVisible && isTableView && <View style={{
@@ -1258,13 +1186,13 @@ useEffect(() => {
                     </View> */}
 
                     <SearchInput
-                        value={searchQuery}
-                        onChangeText={handleSearchChange}
-                        onClear={clearSearch}
-                        theme={theme}
-                        isIpad={isIpad}
-                        isLandscape={isLandscape}
-                      />
+                      value={searchQuery}
+                      onChangeText={handleSearchChange}
+                      onClear={clearSearch}
+                      theme={theme}
+                      isIpad={isIpad}
+                      isLandscape={isLandscape}
+                    />
                     {
                       <View style={{
                         borderRadius: 2,
@@ -1396,7 +1324,7 @@ useEffect(() => {
                                         i.map((item) => item.value).join(","),
                                       ),
                                     );
-                                    
+
                                   }}
                                   options={[]}
                                   item={item}
@@ -1487,13 +1415,13 @@ useEffect(() => {
 
                 </View> */}
                 <SearchInput
-                    value={searchQuery}
-                    onChangeText={handleSearchChange}
-                    onClear={clearSearch}
-                    theme={theme}
-                    isIpad={isIpad}
-                    isLandscape={isLandscape}
-                  />
+                  value={searchQuery}
+                  onChangeText={handleSearchChange}
+                  onClear={clearSearch}
+                  theme={theme}
+                  isIpad={isIpad}
+                  isLandscape={isLandscape}
+                />
                 {
                   <View style={{
                     borderRadius: 2,
@@ -1604,7 +1532,7 @@ useEffect(() => {
                                   i.map((item) => item.value).join(","),
                                 ),
                               );
-                             
+
                             }}
                             options={[]}
                             item={item}
@@ -1692,7 +1620,7 @@ useEffect(() => {
                           dispatch(updateSelectedToDateState(formatted));
                         }
                         setShowDatePicker(null);
-                         setSelectedStatus("All")
+                        setSelectedStatus("All")
 
                       }}
                     >
@@ -1762,100 +1690,97 @@ useEffect(() => {
         </View>
       ) : (
         <>
-          {loadingListId ? (
-            <FullViewLoader />
-          ) : (
-            <>
-              {/* <AppMapView /> */}
-              {
-                statusOptions.length != 0 && <> 
-                 {statusOptions.length <= 3 ? (
-                <View
-                  style={{
-                    width: '100%',
-                    flexDirection: 'row',
-                    paddingHorizontal: 8,
-                    paddingTop: 8,
-                    gap: 10,
-                  }}
-                >
-                  {statusOptions.map(status =>
-                    renderStatusTab(status),
-                  )}
-                </View>
-              ) : (
-                <View style={{
-                  width: '100%',
-                  flexDirection: 'row',
-                  paddingHorizontal: 8,
-                  paddingTop: 8,
-                  gap: 10,
-                }}>
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{
+          (
+          <>
+
+            {
+              statusOptions.length != 0 && <>
+                {statusOptions.length <= 3 ? (
+                  <View
+                    style={{
+                      width: '100%',
+                      flexDirection: 'row',
+                      paddingHorizontal: 8,
+                      paddingTop: 8,
                       gap: 10,
                     }}
                   >
                     {statusOptions.map(status =>
                       renderStatusTab(status),
                     )}
-                  </ScrollView>
-                </View>
-              )}
-                </>
-              }
-             
-              {
-                isTableView ? <>
-                  <TableView
-                    handleDeleteNotification={handleDeleteNotification}
-                    isFromAlertCard={isFromAlertCard}
-                    configData={configData}
-                    filteredData={filteredData}
-                    loadingListId={loadingListId}
-                    totalAmount={totalAmount}
-                    totalQty={totalQty}
-                    isFromBusinessCard={isFromBusinessCard}
-                    pageParamsName={pageParamsName}
-                    // handleItemPressed={handleItemPressed}
-                    parsedConfig={parsedConfig}
-                    pageName={pageName}
-                    setIsFilterVisible={setIsFilterVisible}
-                    setSearchQuery={setSearchQuery}
-                    handleActionButtonPressed={handleActionButtonPressed}
-                    isLoadingMore={isLoadingMore}
-                    loadMore={loadMore}
-                    primaryGroupKey={primaryGroupKey}
-                    secondaryGroupKey={secondaryGroupKey}
-                  />
-                </> :
+                  </View>
+                ) : (
+                  <View style={{
+                    width: '100%',
+                    flexDirection: 'row',
+                    paddingHorizontal: 8,
+                    paddingTop: 8,
+                    gap: 10,
+                  }}>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{
+                        gap: 10,
+                      }}
+                    >
+                      {statusOptions.map(status =>
+                        renderStatusTab(status),
+                      )}
+                    </ScrollView>
+                  </View>
+                )}
+              </>
+            }
 
-                  <ReadableView
-                    handleDeleteNotification={handleDeleteNotification}
-                    isFromAlertCard={isFromAlertCard}
-                    configData={configData}
-                    filteredData={filteredData}
-                    loadingListId={loadingListId}
-                    totalAmount={totalAmount}
-                    totalQty={totalQty}
-                    isFromBusinessCard={isFromBusinessCard}
-                    pageParamsName={pageParamsName}
-                    // handleItemPressed={handleItemPressed}
-                    parsedConfig={parsedConfig}
-                    pageName={pageName}
-                    setIsFilterVisible={setIsFilterVisible}
-                    setSearchQuery={setSearchQuery}
-                    handleActionButtonPressed={handleActionButtonPressed}
-                    isLoadingMore={isLoadingMore}
-                    loadMore={loadMore}
-                    handleAbhaClicked={handleAbhaClicked}
-                  />
-              }
+            {
+              isTableView ? <>
+                <TableView
+                  handleDeleteNotification={handleDeleteNotification}
+                  isFromAlertCard={isFromAlertCard}
+                  configData={configData}
+                  filteredData={filteredData}
+                  loadingListId={loadingListId}
+                  totalAmount={totalAmount}
+                  totalQty={totalQty}
+                  isFromBusinessCard={isFromBusinessCard}
+                  pageParamsName={pageParamsName}
+                  // handleItemPressed={handleItemPressed}
+                  parsedConfig={parsedConfig}
+                  pageName={pageName}
+                  setIsFilterVisible={setIsFilterVisible}
+                  setSearchQuery={setSearchQuery}
+                  handleActionButtonPressed={handleActionButtonPressed}
+                  isLoadingMore={isLoadingMore}
+                  loadMore={loadMore}
+                  primaryGroupKey={primaryGroupKey}
+                  secondaryGroupKey={secondaryGroupKey}
+                />
+              </> :
+                <ReadableView
+                  handleDeleteNotification={handleDeleteNotification}
+                  isFromAlertCard={isFromAlertCard}
+                  configData={configData}
+                  filteredData={filteredData}
+                  loadingListId={loadingListId}
+                  totalAmount={totalAmount}
+                  totalQty={totalQty}
+                  isFromBusinessCard={isFromBusinessCard}
+                  pageParamsName={pageParamsName}
+                  // handleItemPressed={handleItemPressed}
+                  parsedConfig={parsedConfig}
+                  pageName={pageName}
+                  setIsFilterVisible={setIsFilterVisible}
+                  setSearchQuery={setSearchQuery}
+                  handleActionButtonPressed={handleActionButtonPressed}
+                  isLoadingMore={isLoadingMore}
+                  loadMore={loadMore}
+                  handleAbhaClicked={handleAbhaClicked}
+                />
+            }
 
-            </>
-          )}
+          </>
+          )
         </>
       )}
 
@@ -1908,7 +1833,7 @@ useEffect(() => {
             </TouchableOpacity>
           </Animated.View>
         )}
- 
+
 
       {
         alertVisible && <CustomAlert

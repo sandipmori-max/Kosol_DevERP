@@ -11,6 +11,7 @@
     "bundle-android": "cd android && ./gradlew --stop && ./gradlew clean && ./gradlew generateCodegenArtifactsFromSchema && ./gradlew app:bundleRelease",
     "build-android": "cd android && ./gradlew --stop && ./gradlew clean && ./gradlew generateCodegenArtifactsFromSchema && ./gradlew app:assembleRelease"
   },
+  
   "dependencies": {
     "@bam.tech/react-native-image-resizer": "^3.0.11",
     "@notifee/react-native": "^9.1.8",

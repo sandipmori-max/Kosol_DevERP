@@ -912,7 +912,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
           getERPPageThunk({ page: "Dashboard", id: "" }),
         ).unwrap();
 
-        console.log("parsed-----", parsed)
+        console.log("parsed---DashboardDashboardDashboardDashboardDashboard--", parsed)
 
         const normalizedControls = (parsed?.pagectl || []).map((c) => ({
           ...c,
