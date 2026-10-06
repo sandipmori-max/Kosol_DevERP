@@ -504,7 +504,7 @@ const statusOptions = useMemo(() => {
     ),
   ];
 
-  return uniqueStatus.length > 0
+  return uniqueStatus.length > 1
     ? ["All", ...uniqueStatus.sort((a, b) => a.localeCompare(b))]
     : [];
 }, [listData]);
@@ -1438,7 +1438,8 @@ const statusOptions = useMemo(() => {
                             ? "keyboard-double-arrow-down"
                             : "keyboard-double-arrow-up"
                           : "sort-by-alpha"
-                      } onPress={() => {
+                      } 
+                      onPress={() => {
                         setSortingVisible(true)
                       }}
                       color={theme === 'dark' ? 'white' : "black"}
