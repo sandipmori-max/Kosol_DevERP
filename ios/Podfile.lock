@@ -1970,9 +1970,9 @@ PODS:
     - Yoga
   - react-native-in-app-review (4.4.2):
     - React-Core
-  - react-native-maps (1.26.0):
-    - react-native-maps/Maps (= 1.26.0)
-  - react-native-maps/Generated (1.26.0):
+  - react-native-maps (1.29.11):
+    - react-native-maps/Maps (= 1.29.11)
+  - react-native-maps/Generated (1.29.11):
     - boost
     - DoubleConversion
     - fast_float
@@ -2001,7 +2001,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-maps/Maps (1.26.0):
+  - react-native-maps/Maps (1.29.11):
     - boost
     - DoubleConversion
     - fast_float
@@ -2094,7 +2094,7 @@ PODS:
     - Yoga
   - react-native-render-html (6.3.4):
     - React-Core
-  - react-native-safe-area-context (5.9.1):
+  - react-native-safe-area-context (5.10.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2113,8 +2113,8 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.9.1)
-    - react-native-safe-area-context/fabric (= 5.9.1)
+    - react-native-safe-area-context/common (= 5.10.1)
+    - react-native-safe-area-context/fabric (= 5.10.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2125,7 +2125,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/common (5.9.1):
+  - react-native-safe-area-context/common (5.10.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2154,7 +2154,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/fabric (5.9.1):
+  - react-native-safe-area-context/fabric (5.10.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2186,7 +2186,7 @@ PODS:
     - Yoga
   - react-native-sqlite-storage (6.0.1):
     - React-Core
-  - react-native-vector-icons-fontawesome (13.1.3)
+  - react-native-vector-icons-fontawesome (13.1.4)
   - react-native-vector-icons-material-icons (12.5.0)
   - react-native-version-check (3.5.0):
     - React-Core
@@ -2811,10 +2811,11 @@ PODS:
     - Yoga
   - RNDeviceInfo (14.1.1):
     - React-Core
-  - RNFastImage (8.6.3):
+  - RNFastImage (8.31.2):
     - React-Core
-    - SDWebImage (~> 5.11.1)
-    - SDWebImageWebPCoder (~> 0.8.4)
+    - SDWebImage (< 6.0, >= 5.11.1)
+    - SDWebImagePhotosPlugin (< 2.0, >= 1.2.0)
+    - SDWebImageWebPCoder (< 1.0, >= 0.8.4)
   - RNFBApp (23.8.8):
     - boost
     - DoubleConversion
@@ -2879,7 +2880,7 @@ PODS:
     - Yoga
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.32.0):
+  - RNGestureHandler (2.33.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2921,7 +2922,7 @@ PODS:
     - RNNotifee/NotifeeCore (= 9.1.8)
   - RNNotifee/NotifeeCore (9.1.8):
     - React-Core
-  - RNPermissions (5.6.1):
+  - RNPermissions (5.6.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -3280,6 +3281,8 @@ PODS:
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
+  - SDWebImagePhotosPlugin (1.2.1):
+    - SDWebImage/Core (~> 5.10)
   - SDWebImageWebPCoder (0.8.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
@@ -3448,6 +3451,7 @@ SPEC REPOS:
     - PromisesObjC
     - React-Codegen
     - SDWebImage
+    - SDWebImagePhotosPlugin
     - SDWebImageWebPCoder
     - SocketRocket
     - WCPhotoManipulator
@@ -3754,14 +3758,14 @@ SPEC CHECKSUMS:
   react-native-image-picker: 9bceb747cd6cde22a3416ffdc819d11b5b11f156
   react-native-image-resizer: bc50c33e359ac9a5702b912320d4d1175c5d4294
   react-native-in-app-review: 1516ba69d60d58053b7eb3aaaf8d2a5a74af8b57
-  react-native-maps: 3793b1682de6d6c5d8e225dc877eb435b5090e80
+  react-native-maps: 2baa3a46768dcdc31a46120c25054f100d92ce8e
   react-native-netinfo: 75f720ddf3f559f152ef7a232ce09b3b70490ea9
   react-native-orientation-locker: cc6f357b289a2e0dd2210fea0c52cb8e0727fdaa
   react-native-photo-manipulator: 92fd2feec313f042e32f6396fa9fe7c297ff3652
   react-native-render-html: 5afc4751f1a98621b3009432ef84c47019dcb2bd
-  react-native-safe-area-context: 3b9af93f3923be957e83007dae205337093d4222
+  react-native-safe-area-context: 382783e1bea4b99a6d77c4e216f039d48ba8871c
   react-native-sqlite-storage: 0c84826214baaa498796c7e46a5ccc9a82e114ed
-  react-native-vector-icons-fontawesome: 10971100e38ab9426870a677b0e90fb8cd18a2fe
+  react-native-vector-icons-fontawesome: b19a84b13d42875ae4e70c2aa0c5db81672378b8
   react-native-vector-icons-material-icons: 8717ed6d0adafdea7a20475dababba112992a372
   react-native-version-check: 842a3b0e7221798cbe8c6abaf24aab3ed0b485ce
   react-native-webview: 12e78565569a5a2f519fc1c4efa8dd322a60f8e2
@@ -3801,20 +3805,21 @@ SPEC CHECKSUMS:
   RNCClipboard: 8e5237c79dafacea5b7adf4c3ab39a4236b5ef7e
   RNDateTimePicker: f60443f1e9d3ac63db9048870d872f8db99a8619
   RNDeviceInfo: bcce8752b5043a623fe3c26789679b473f705d3c
-  RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
+  RNFastImage: 4bbf05dbc6c7d3b67f228da909421dc3ddfd3cd3
   RNFBApp: dd459605dade60ba81833945bc26efa1c44ac1bc
   RNFBMessaging: bb9afc19988f131f84370b4345ba15aa6cb558c1
   RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
-  RNGestureHandler: e3b6097ad813c13952b7643118e7cf46a8572aae
+  RNGestureHandler: 7c24ee853bfec700062f04ad7f0957ba2eecb52b
   RNMLKitTextRecognition: 2d7c3481b9dabc72f7e31c67025c28b2c8d653b0
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
-  RNPermissions: 3f8544cd22e4cd199b245b4070d8570c33fa05a0
+  RNPermissions: 0876915e6f346b3ceb84346e0cee1555c18ce8e1
   RNReanimated: efeb14f6e1ccdc2f2288ccdceaeaa3821e7cbc94
   RNScreens: 6a2d1ff4d263d29d3d3db9f3c19aad2f99fdd162
   RNShare: f7b9bb520c96df188c886293511309c4fa2ebfd6
   RNSVG: ce8672dee470e1af3fbdaf1351d36d15e89b3d92
   RNVectorIcons: 0567525e0a344458329daa09068cf9e8090ec791
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
+  SDWebImagePhotosPlugin: aaf5bc35fd49b66876de58c33eeb6e38b50920e5
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   VisionCamera: 0044a94f7489f19e19d5938e97dfc36f4784af3c

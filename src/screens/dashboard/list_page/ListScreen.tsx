@@ -113,10 +113,11 @@ const SearchInput = React.memo(
           <TextInput
             style={{
               flex: 1,
-              backgroundColor: "#fff",
+              backgroundColor: theme === "dark" ? "black" : "white",
               borderRadius: 8,
               paddingHorizontal: 12,
               height: 36,
+              color: theme === "dark" ? "white" : "black"
             }}
             placeholder="Search in list..."
             value={value}
@@ -495,19 +496,19 @@ const ListScreen = () => {
     }
   };
 
-const statusOptions = useMemo(() => {
-  const uniqueStatus = [
-    ...new Set(
-      listData
-        .map(item => item?.status?.toString().trim())
-        .filter(Boolean)
-    ),
-  ];
+  const statusOptions = useMemo(() => {
+    const uniqueStatus = [
+      ...new Set(
+        listData
+          .map(item => item?.status?.toString().trim())
+          .filter(Boolean)
+      ),
+    ];
 
-  return uniqueStatus.length > 1
-    ? ["All", ...uniqueStatus.sort((a, b) => a.localeCompare(b))]
-    : [];
-}, [listData]);
+    return uniqueStatus.length > 1
+      ? ["All", ...uniqueStatus.sort((a, b) => a.localeCompare(b))]
+      : [];
+  }, [listData]);
 
   const handleStatusChange = (status) => {
     setSearchQuery("")
@@ -1101,7 +1102,10 @@ const statusOptions = useMemo(() => {
           width: '100%',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+
+          backgroundColor: theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+
+
         }}>
           <Text style={{
             color: 'white',
@@ -1250,13 +1254,14 @@ const statusOptions = useMemo(() => {
                               <MaterialIcons
                                 name="calendar-today"
                                 size={18}
-                                color={theme === 'dark' ? 'white' : "black"}
+                                color={"white"}
                                 style={{ marginRight: 8 }}
                               />
                               <TranslatedText
                                 numberOfLines={1}
                                 text={fromDate || t("msg.msg9")}
                                 style={[styles.dateButtonText,
+
 
                                 ]}
                               ></TranslatedText>
@@ -1282,7 +1287,7 @@ const statusOptions = useMemo(() => {
                               <MaterialIcons
                                 name="calendar-today"
                                 size={18}
-                                color={theme === 'dark' ? 'white' : "black"}
+                                color={"white"}
                                 style={{ marginRight: 8 }}
                               />
                               <Text style={styles.dateButtonText}>
@@ -1438,7 +1443,7 @@ const statusOptions = useMemo(() => {
                             ? "keyboard-double-arrow-down"
                             : "keyboard-double-arrow-up"
                           : "sort-by-alpha"
-                      } 
+                      }
                       onPress={() => {
                         setSortingVisible(true)
                       }}
@@ -1459,7 +1464,12 @@ const statusOptions = useMemo(() => {
                         setSearchQuery("");
                         setShowDatePicker({ type: "from", show: true });
                       }}
-                      style={styles.dateButton}
+                      style={[styles.dateButton,
+                      {
+                        backgroundColor: theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+                      }
+
+                      ]}
                     >
                       <View
                         style={{ flexDirection: "row", alignItems: "center" }}
@@ -1467,13 +1477,16 @@ const statusOptions = useMemo(() => {
                         <MaterialIcons
                           name="calendar-today"
                           size={18}
-                          color={theme === 'dark' ? 'white' : "black"}
+                          color={"white"}
                           style={{ marginRight: 8 }}
                         />
                         <TranslatedText
                           numberOfLines={1}
                           text={fromDate || t("msg.msg9")}
                           style={[styles.dateButtonText,
+                          {
+                            color: 'white'
+                          }
 
                           ]}
                         ></TranslatedText>
@@ -1489,7 +1502,10 @@ const statusOptions = useMemo(() => {
                         setSearchQuery("");
                         setShowDatePicker({ type: "to", show: true });
                       }}
-                      style={styles.dateButton}
+                      style={[styles.dateButton, {
+                        backgroundColor: theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+                      }
+                      ]}
                     >
                       <View
                         style={{ flexDirection: "row", alignItems: "center" }}
@@ -1497,10 +1513,14 @@ const statusOptions = useMemo(() => {
                         <MaterialIcons
                           name="calendar-today"
                           size={18}
-                          color={theme === 'dark' ? 'white' : "black"}
+                          color={'white'}
                           style={{ marginRight: 8 }}
                         />
-                        <Text style={styles.dateButtonText}>
+                        <Text style={[styles.dateButtonText,
+                        {
+                          color: 'white'
+                        }
+                        ]}>
                           {toDate || t("msg.msg11")}
                         </Text>
                       </View>

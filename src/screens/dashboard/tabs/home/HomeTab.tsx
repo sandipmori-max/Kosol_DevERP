@@ -1220,8 +1220,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
   const intervalRef = useRef(null);
 
-  useEffect(() => { 
-     const updateWorkingTime = () => {
+  useEffect(() => {
+    const updateWorkingTime = () => {
       const now = new Date();
       if (now >= breakStart && now < breakEnd) {
         setWorkingTime("Break Time");
@@ -1253,15 +1253,15 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     const inTimeDate = new Date();
     inTimeDate.setHours(hours, minutes, 0, 0);
     const shift = listShiftData && listShiftData[0];
-    if(!shift){
-        const breakStart = new Date();
-        breakStart.setHours(13, 30, 0, 0);
-        const breakEnd = new Date();
-        breakEnd.setHours(14, 30, 0, 0);
-        updateWorkingTime();
-         intervalRef.current = setInterval(updateWorkingTime, 1000);
-        return () => clearInterval(intervalRef.current);
-    } 
+    if (!shift) {
+      const breakStart = new Date();
+      breakStart.setHours(13, 30, 0, 0);
+      const breakEnd = new Date();
+      breakEnd.setHours(14, 30, 0, 0);
+      updateWorkingTime();
+      intervalRef.current = setInterval(updateWorkingTime, 1000);
+      return () => clearInterval(intervalRef.current);
+    }
     const breakStart = new Date();
     const [time, modifier] = shift?.breakstart.split(" ");
     let [brhours, brminutes] = time.split(":").map(Number);
@@ -2624,6 +2624,12 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                       <Text
                                         style={[
                                           styles.timeText,
+                                          {
+                                            color:
+                                              theme === "dark"
+                                                ? "gray"
+                                                : "#000",
+                                          },
                                         ]}
                                       >
                                         {attendance.intime || "-"}
@@ -2739,8 +2745,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                   </View>
                                 </>
                               )}
-                            
-                             
+
+
                             {
                               attendance?.intime && (
 
@@ -2858,7 +2864,15 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
                                         <Text style={[styles.timeText, {
                                           marginTop: 12
-                                        }]}>
+                                        },
+                                        {
+                                          color:
+                                            theme === "dark"
+                                              ? "#fff"
+                                              : "#000",
+                                        },
+
+                                        ]}>
                                           {item.count}
                                         </Text>
 
@@ -2937,7 +2951,9 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                         flexDirection: "row",
                                         flexWrap: "wrap",
                                         justifyContent: "space-between",
+
                                       },
+
                                     ]}
                                   >
 
@@ -2946,35 +2962,73 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                       listShiftData.map((item, index) => (
                                         <View
                                           key={`${item?.shiftname}-${index}`}
-                                          style={styles.shiftCard}
+                                          style={[styles.shiftCard,
+
+                                          {
+                                            backgroundColor:
+                                              theme === "dark" ? "#000" : "#fff",
+                                          }
+
+                                          ]}
                                         >
                                           <View style={styles.shiftHeader}>
-                                            <Text style={styles.shiftNameText}>
+                                            <Text style={[styles.shiftNameText,
+
+                                            {
+                                              color:
+                                                theme === "dark" ? "#fff" : "#000",
+                                            }
+                                            ]}>
                                               {item?.shiftname}
                                             </Text>
 
-                                            <Text style={styles.workingHoursText}>
+                                            <Text style={[styles.workingHoursText,
+                                            {
+                                              color:
+                                                theme === "dark" ? "#fff" : "#000",
+                                            }
+                                            ]}>
                                               {item?.totalworkinghours} hr.
                                             </Text>
                                           </View>
 
                                           <View style={styles.shiftRow}>
-                                            <Text style={styles.shiftLabel}>Shift Time</Text>
-                                            <Text style={styles.shiftValue}>
+                                            <Text style={[styles.shiftLabel,
+                                            {
+                                              color:
+                                                theme === "dark" ? "#fff" : "#000",
+                                            }
+                                            ]}>Shift Time</Text>
+                                            <Text style={[styles.shiftValue, {
+                                              color:
+                                                theme === "dark" ? "#fff" : "#000",
+                                            }]}>
                                               {item?.starttime} - {item?.endtime}
                                             </Text>
                                           </View>
 
                                           <View style={styles.shiftRow}>
-                                            <Text style={styles.shiftLabel}>Break Time</Text>
-                                            <Text style={styles.shiftValue}>
+                                            <Text style={[styles.shiftLabel, {
+                                              color:
+                                                theme === "dark" ? "#fff" : "#000",
+                                            }]}>Break Time</Text>
+                                            <Text style={[styles.shiftValue, {
+                                              color:
+                                                theme === "dark" ? "#fff" : "#000",
+                                            }]}>
                                               {item?.breakstart} - {item?.breakend}
                                             </Text>
                                           </View>
 
                                           <View style={styles.shiftRow}>
-                                            <Text style={styles.shiftLabel}>Weekly off</Text>
-                                            <Text style={styles.shiftValue}>
+                                            <Text style={[styles.shiftLabel, {
+                                              color:
+                                                theme === "dark" ? "#fff" : "#000",
+                                            }]}>Weekly off</Text>
+                                            <Text style={[styles.shiftValue, {
+                                              color:
+                                                theme === "dark" ? "#fff" : "#000",
+                                            }]}>
                                               {item?.weekoff}
                                             </Text>
                                           </View>

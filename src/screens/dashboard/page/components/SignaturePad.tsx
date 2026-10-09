@@ -284,6 +284,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 0,
+    marginBottom: 10
   },
   container2: {
     position: 'absolute',

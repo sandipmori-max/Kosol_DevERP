@@ -159,6 +159,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 12,
     backgroundColor: "white",
+    padding : 12
   },
   label: {
     fontSize: 15,

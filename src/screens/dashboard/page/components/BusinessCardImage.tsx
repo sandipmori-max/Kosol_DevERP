@@ -518,10 +518,9 @@ const BusinessCardView = ({
   };
 
   const MINDEE_URL = "https://api-v2.mindee.net";
-  const MINDEE_MODEL_ID = "c24a4d2b-dbe3-4dc2-8781-9d8255eb7cae";
+  const MINDEE_MODEL_ID = "3e20ad8f-b0cf-443b-a70c-c86feab990d9";
 
-
-  const MINDEE_API_KEY = "md_rDhKjr9Hd1Sfn-Xz1qQQui3Aw5WPGVgNAkpqZ2nRqrs";
+  const MINDEE_API_KEY = "md_n4fhlXBcX9ynmDfrnjwtvFUqU3YnuL2E1VpdNTodALI";
 
   // ----------------------------------------
   // 1. ENQUEUE
