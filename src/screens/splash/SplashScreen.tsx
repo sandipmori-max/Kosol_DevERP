@@ -390,7 +390,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
       : user?.company_code.toLowerCase() === 'gayatrirubtech' ? 260 :
        240;
 
-  const logoContainerSize = 
+  const logoContainerSize = !user ? logoSize - 80 :
   user?.company_code.toLowerCase() === 'deverp' ? logoSize + 56  :
   user?.company_code.toLowerCase() === 'oeuvre01' ? logoSize :
   user?.company_code.toLowerCase() === 'gayatrirubtech' ? 

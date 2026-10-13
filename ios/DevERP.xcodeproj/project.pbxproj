@@ -22,6 +22,7 @@
 		DAB5FD7D2F9B8C29007D0EDD /* VisionKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAB5FD7C2F9B8C29007D0EDD /* VisionKit.framework */; };
 		DAB5FD7F2F9B8C36007D0EDD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAB5FD7E2F9B8C36007D0EDD /* UIKit.framework */; };
 		DAB5FD812F9B8C3F007D0EDD /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAB5FD802F9B8C3F007D0EDD /* CoreLocation.framework */; };
+		DACAEAF13078F0D500190F9D /* beep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DACAEAF03078F0D500190F9D /* beep.mp3 */; };
 		DACC1D5B2F33480300EBAA0E /* OrientationModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACC1D5A2F33480300EBAA0E /* OrientationModule.swift */; };
 		DACC1D5D2F33482B00EBAA0E /* OrientationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DACC1D5C2F33482B00EBAA0E /* OrientationModule.m */; };
 /* End PBXBuildFile section */
@@ -48,6 +49,7 @@
 		DAB5FD7C2F9B8C29007D0EDD /* VisionKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VisionKit.framework; path = System/Library/Frameworks/VisionKit.framework; sourceTree = SDKROOT; };
 		DAB5FD7E2F9B8C36007D0EDD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		DAB5FD802F9B8C3F007D0EDD /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		DACAEAF03078F0D500190F9D /* beep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = beep.mp3; sourceTree = "<group>"; };
 		DACC1D5A2F33480300EBAA0E /* OrientationModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationModule.swift; sourceTree = "<group>"; };
 		DACC1D5C2F33482B00EBAA0E /* OrientationModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OrientationModule.m; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -119,6 +121,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				DACAEAF03078F0D500190F9D /* beep.mp3 */,
 				DA73448C2EB886B1002F7399 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* DevERP */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -212,6 +215,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				DA73448D2EB886B1002F7399 /* GoogleService-Info.plist in Resources */,
+				DACAEAF13078F0D500190F9D /* beep.mp3 in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				B35EAE6E6BBA861CA651C21A /* PrivacyInfo.xcprivacy in Resources */,
 				72D5339640E44AA1BB547FC4 /* Handlee-Regular.ttf in Resources */,

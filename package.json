@@ -11,7 +11,6 @@
     "bundle-android": "cd android && ./gradlew --stop && ./gradlew clean && ./gradlew generateCodegenArtifactsFromSchema && ./gradlew app:bundleRelease",
     "build-android": "cd android && ./gradlew --stop && ./gradlew clean && ./gradlew generateCodegenArtifactsFromSchema && ./gradlew app:assembleRelease"
   },
-  
   "dependencies": {
     "@bam.tech/react-native-image-resizer": "^3.0.11",
     "@notifee/react-native": "^9.1.8",
@@ -70,6 +69,7 @@
     "react-native-screens": "4.11.1",
     "react-native-share": "^12.3.1",
     "react-native-signature-canvas": "^5.1.1",
+    "react-native-sound": "^0.13.0",
     "react-native-sqlite-storage": "^6.0.1",
     "react-native-svg": "^15.12.1",
     "react-native-vector-icons": "^10.3.0",
