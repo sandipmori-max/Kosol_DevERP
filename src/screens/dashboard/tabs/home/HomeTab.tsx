@@ -408,7 +408,9 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                         <ERPIcon name="search" onPress={() => setShowSearch(true)} />
                       )}
 
-                      {attendanceDone && user?.id == (user?.company_code?.toLowerCase()?.includes("gayatrirubtech") ? '1' : user?.company_code?.toLowerCase()?.includes("oeuvre01") ? "16" : "113") && (
+                      {attendanceDone && user?.id == (
+                        user?.company_code?.toLowerCase()?.includes("hcspl2024") ? "157" : 
+                        user?.company_code?.toLowerCase()?.includes("gayatrirubtech") ? '1' : user?.company_code?.toLowerCase()?.includes("oeuvre01") ? "16" : "113") && (
                         <ERPIcon
                           color={"green"}
                           name={"location-on"}

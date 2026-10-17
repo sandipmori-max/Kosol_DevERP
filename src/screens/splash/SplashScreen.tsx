@@ -379,7 +379,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   ============================================================
   */
 
-  const logoSize = isLandscape
+  const logoSize = !user ? 100 : isLandscape
     ? isTablet
       ? 118
       : 200

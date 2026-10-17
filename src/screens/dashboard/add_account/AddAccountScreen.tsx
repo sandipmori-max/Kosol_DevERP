@@ -526,8 +526,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                           ? 'gayatrirubtech'
                           : user?.company_code?.toLowerCase()?.includes("oeuvre01")
                             ? 'oeuvre01'
-                            : user?.company_code?.toLowerCase()?.includes("hcpl2024")
-                              ? 'hcpl2024'
+                            : user?.company_code?.toLowerCase()?.includes("hcspl2024")
+                              ? 'hcspl2024'
                               : "", user: "",
                         password: "",
                       }}
@@ -550,7 +550,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                               (
                                 !user?.company_code?.toLowerCase()?.includes("gayatrirubtech") &&
                                 !user?.company_code?.toLowerCase()?.includes("oeuvre01") &&
-                                !user?.company_code?.toLowerCase()?.includes("hcpl2024")
+                                !user?.company_code?.toLowerCase()?.includes("hcspl2024")
                               ) && <View style={styles.inputContainer}>
                                 <Text
                                   style={[
@@ -951,8 +951,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                 ? 'gayatrirubtech'
                                 : user?.company_code?.toLowerCase()?.includes("oeuvre01")
                                   ? 'oeuvre01'
-                                  : user?.company_code?.toLowerCase()?.includes("hcpl2024")
-                                    ? 'hcpl2024'
+                                  : user?.company_code?.toLowerCase()?.includes("hcspl2024")
+                                    ? 'hcspl2024'
                                     : "", user: "",
                               password: "",
                             }}
@@ -978,7 +978,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                     (
                                       !user?.company_code?.toLowerCase()?.includes("gayatrirubtech") &&
                                       !user?.company_code?.toLowerCase()?.includes("oeuvre01") &&
-                                      !user?.company_code?.toLowerCase()?.includes("hcpl2024")
+                                      !user?.company_code?.toLowerCase()?.includes("hcspl2024")
                                     ) && <View style={styles.inputContainer}>
                                       <Text
                                         style={[
