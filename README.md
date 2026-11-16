@@ -5062,4 +5062,4 @@ CROSS APPLY
 
         END AS Att
 
-) x;
+) x;# Kosol_DevERP
