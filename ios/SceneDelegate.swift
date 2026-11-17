@@ -25,7 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         appDelegate.window = window
 
         factory.startReactNative(
-            withModuleName: "DevERP",
+            withModuleName: "Kosol Energie",
             in: window,
             launchOptions: nil
         )

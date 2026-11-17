@@ -47,10 +47,10 @@ setup_permissions([
 
 
 # ============================================================
-# DevERP
+# KosolEnergie
 # ============================================================
 
-target 'DevERP' do
+target 'KosolEnergie' do
 
   config = use_native_modules!
 
