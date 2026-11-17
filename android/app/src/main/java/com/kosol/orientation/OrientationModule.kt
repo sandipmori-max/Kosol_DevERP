@@ -1,4 +1,4 @@
-package com.deverp.orientation
+package com.kosol.orientation
 
 import android.app.Activity
 import android.content.pm.ActivityInfo

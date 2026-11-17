@@ -1,4 +1,4 @@
-package com.deverp.docscanner;
+package com.kosol.docscanner;
 
 import android.app.Activity;
 import android.content.Intent;

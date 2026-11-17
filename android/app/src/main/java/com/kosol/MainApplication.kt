@@ -1,8 +1,8 @@
-package com.deverp
+package com.kosol
 
 import android.app.Application
-import com.deverp.location.LocationPackage
-import com.deverp.docscanner.DocumentScannerPackage
+import com.kosol.location.LocationPackage
+import com.kosol.docscanner.DocumentScannerPackage
 
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication

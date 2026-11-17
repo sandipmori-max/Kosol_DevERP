@@ -47,10 +47,10 @@ setup_permissions([
 
 
 # ============================================================
-# DevERP
+# Kosol
 # ============================================================
 
-target 'DevERP' do
+target 'Kosol' do
 
   config = use_native_modules!
 

@@ -1,4 +1,4 @@
-package com.deverp.location
+package com.kosol.location
 
 
 import android.app.Notification

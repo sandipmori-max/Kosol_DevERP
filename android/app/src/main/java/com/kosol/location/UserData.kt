@@ -1,4 +1,4 @@
-package com.deverp.location
+package com.kosol.location
 
 data class UserData(
     val token: String,
